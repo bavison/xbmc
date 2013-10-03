@@ -268,7 +268,7 @@ TOUCHED_MEDIA=addons/skin.touched/media
 SKIN_DIRS+=$(TOUCHED_MEDIA)
 endif
 
-LIBS=@LIBS@
+LIBS=@LIBS@ -L/home/bavison/gperftools/gperftools-read-only/.libs/ -lprofiler
 CFLAGS=@CFLAGS@
 CXXFLAGS=@CXXFLAGS@
 LDFLAGS=@LDFLAGS@

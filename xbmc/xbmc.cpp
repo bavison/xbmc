@@ -25,6 +25,20 @@
 #include "linux/RBP.h"
 #endif
 
+#include "/home/bavison/gperftools/gperftools-read-only/src/gperftools/profiler.h"
+extern "C" {
+  extern volatile int profile_target_threaded;
+  extern __thread volatile int profile_target_thread_threaded;
+  int gperftools_filter_in_thread(void *arg);
+}  // extern "C"
+
+volatile int profile_target_threaded = 0;
+__thread volatile int profile_target_thread_threaded = 0;
+int gperftools_filter_in_thread(void *arg)
+{
+    return profile_target_threaded || profile_target_thread_threaded;
+}
+
 extern "C" int XBMC_Run(bool renderGUI)
 {
   int status = -1;
@@ -64,6 +78,9 @@ extern "C" int XBMC_Run(bool renderGUI)
     return status;
   }
 
+  struct ProfilerOptions myProfilerOptions = { gperftools_filter_in_thread };
+  ProfilerStartWithOptions("/home/pi/xbmc.prof", &myProfilerOptions);
+  
   try
   {
     status = g_application.Run();
@@ -74,6 +91,8 @@ extern "C" int XBMC_Run(bool renderGUI)
     status = -1;
   }
 
+  ProfilerStop();
+  
 #ifdef TARGET_RASPBERRY_PI
   g_RBP.Deinitialize();
 #endif
