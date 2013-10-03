@@ -2545,6 +2545,8 @@ bool CApplication::OnAppCommand(const CAction &action)
   return true;
 }
 
+extern "C" volatile int profile_target_threaded;
+
 bool CApplication::OnAction(const CAction &action)
 {
   // special case for switching between GUI & fullscreen mode.
@@ -2604,7 +2606,17 @@ bool CApplication::OnAction(const CAction &action)
   // screenshot : take a screenshot :)
   if (action.GetID() == ACTION_TAKE_SCREENSHOT)
   {
-    CScreenShot::TakeScreenshot();
+//    CScreenShot::TakeScreenshot();
+    if (profile_target_threaded)
+    {
+      std::cout << "Profiling disabled\n";
+      profile_target_threaded = 0;
+    }
+    else
+    {
+      std::cout << "Profiling enabled\n";
+      profile_target_threaded = 1;
+    }
     return true;
   }
   // built in functions : execute the built-in
