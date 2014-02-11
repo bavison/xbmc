@@ -2598,13 +2598,20 @@ void CFileItemList::StackFiles()
   }
 }
 
+#include <iostream>
+#include <sys/time.h>
+
 bool CFileItemList::Load(int windowID)
 {
   CFile file;
   if (file.Open(GetDiscFileCache(windowID)))
   {
     CArchive ar(&file, CArchive::load);
+    struct timeval before, after;
+    gettimeofday(&before, NULL);
     ar >> *this;
+    gettimeofday(&after, NULL);
+    std::cout << "Archive load time: " << (1000000*(after.tv_sec-before.tv_sec)+after.tv_usec-before.tv_usec) << std::endl;
     CLog::Log(LOGDEBUG,"Loading items: %i, directory: %s sort method: %i, ascending: %s", Size(), CURL::GetRedacted(GetPath()).c_str(), m_sortDescription.sortBy,
       m_sortDescription.sortOrder == SortOrderAscending ? "true" : "false");
     ar.Close();
