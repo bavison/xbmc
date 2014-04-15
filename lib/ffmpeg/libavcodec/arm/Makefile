@@ -18,6 +18,8 @@ ARMV6-OBJS-$(CONFIG_MPEGAUDIODSP)      += arm/mpegaudiodsp_fixed_armv6.o
 
 OBJS-$(CONFIG_MPEGVIDEO)               += arm/mpegvideo_arm.o
 OBJS-$(CONFIG_VORBIS_DECODER)          += arm/vorbisdsp_init_arm.o
+ARMV6-OBJS-$(CONFIG_VC1_DECODER)       += arm/startcode_armv6.o
+ARMV6-OBJS-$(CONFIG_VC1_PARSER)        += arm/startcode_armv6.o
 OBJS-$(CONFIG_VP3DSP)                  += arm/vp3dsp_init_arm.o
 OBJS-$(CONFIG_VP5_DECODER)             += arm/vp56dsp_init_arm.o
 OBJS-$(CONFIG_VP6_DECODER)             += arm/vp56dsp_init_arm.o
