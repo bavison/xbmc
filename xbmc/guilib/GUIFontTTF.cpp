@@ -359,9 +359,11 @@ void CGUIFontTTFBase::DrawTextInternal(float x, float y, const vecColors &colors
   Begin();
 
   uint32_t rawAlignment = alignment;
-  bool dirtyCache;
+  bool dirtyCache = true;
   bool hardwareClipping = g_Windowing.ScissorsCanEffectClipping();
+#ifndef HAS_DX
   CGUIFontCacheStaticPosition staticPos(x, y);
+#endif
   CGUIFontCacheDynamicPosition dynamicPos;
   if (hardwareClipping)
   {
@@ -379,6 +381,7 @@ void CGUIFontTTFBase::DrawTextInternal(float x, float y, const vecColors &colors
                             dirtyCache) :
       unusedVertexBuffer;
   boost::shared_ptr<std::vector<SVertex> > tempVertices = boost::make_shared<std::vector<SVertex> >();
+#ifndef HAS_DX
   boost::shared_ptr<std::vector<SVertex> > &vertices = hardwareClipping ?
       tempVertices :
       static_cast<boost::shared_ptr<std::vector<SVertex> >&>(m_staticCache.Lookup(staticPos,
@@ -387,6 +390,7 @@ void CGUIFontTTFBase::DrawTextInternal(float x, float y, const vecColors &colors
                            scrolling,
                            XbmcThreads::SystemClockMillis(),
                            dirtyCache));
+#endif
   if (dirtyCache)
   {
     // save the origin, which is scaled separately
@@ -503,23 +507,29 @@ void CGUIFontTTFBase::DrawTextInternal(float x, float y, const vecColors &colors
     }
     else
     {
+#ifndef HAS_DX
       m_staticCache.Lookup(staticPos,
                            colors, text,
                            rawAlignment, maxPixelWidth,
                            scrolling,
                            XbmcThreads::SystemClockMillis(),
                            dirtyCache) = *static_cast<CGUIFontCacheStaticValue *>(&tempVertices);
+#endif
       /* Append the new vertices to the set collected since the first Begin() call */
       m_vertex.insert(m_vertex.end(), tempVertices->begin(), tempVertices->end());
     }
   }
   else
   {
+#ifndef HAS_DX
     if (hardwareClipping)
+#endif
       m_vertexTrans.push_back(CTranslatedVertices(dynamicPos.m_x, dynamicPos.m_y, dynamicPos.m_z, &vertexBuffer, g_graphicsContext.GetClipRegion()));
+#ifndef HAS_DX
     else
       /* Append the vertices from the cache to the set collected since the first Begin() call */
       m_vertex.insert(m_vertex.end(), vertices->begin(), vertices->end());
+#endif
   }
 
   End();
